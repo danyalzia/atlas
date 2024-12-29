@@ -23,6 +23,7 @@ class HandleInertiaRequests extends Middleware
      * @param  \Illuminate\Http\Request  $request
      * @return string|null
      */
+    #[\Override]
     public function version(Request $request)
     {
         return parent::version($request);
@@ -35,10 +36,11 @@ class HandleInertiaRequests extends Middleware
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
+    #[\Override]
     public function share(Request $request)
     {
         return array_merge(parent::share($request), [
-            'user' => Auth::user() ? Auth::user() : null,
+            'user' => Auth::user() ?: null,
         ]);
     }
 }

@@ -20,6 +20,7 @@ class FortifyServiceProvider extends ServiceProvider
      *
      * @return void
      */
+    #[\Override]
     public function register()
     {
         //
@@ -37,31 +38,15 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
 
-        RateLimiter::for('login', function (Request $request) {
-            return Limit::perMinute(5)->by($request->email.$request->ip());
-        });
+        RateLimiter::for('login', fn(Request $request) => Limit::perMinute(5)->by($request->email.$request->ip()));
 
-        RateLimiter::for('two-factor', function (Request $request) {
-            return Limit::perMinute(5)->by($request->session()->get('login.id'));
-        });
+        RateLimiter::for('two-factor', fn(Request $request) => Limit::perMinute(5)->by($request->session()->get('login.id')));
 
-        Fortify::loginView(function () {
-            return Inertia::render('auth/Login');
-        });
-        Fortify::registerView(function () {
-            return Inertia::render('auth/Register');
-        });
-        Fortify::requestPasswordResetLinkView(function () {
-            return Inertia::render('auth/ForgotPassword');
-        });
-        Fortify::resetPasswordView(function () {
-            return Inertia::render('auth/ResetPassword');
-        });
-        Fortify::verifyEmailView(function () {
-            return Inertia::render('auth/VerifyEmail');
-        });
-        Fortify::confirmPasswordView(function () {
-            return Inertia::render('auth/ConfirmPassword');
-        });
+        Fortify::loginView(fn() => Inertia::render('auth/Login'));
+        Fortify::registerView(fn() => Inertia::render('auth/Register'));
+        Fortify::requestPasswordResetLinkView(fn() => Inertia::render('auth/ForgotPassword'));
+        Fortify::resetPasswordView(fn() => Inertia::render('auth/ResetPassword'));
+        Fortify::verifyEmailView(fn() => Inertia::render('auth/VerifyEmail'));
+        Fortify::confirmPasswordView(fn() => Inertia::render('auth/ConfirmPassword'));
     }
 }
